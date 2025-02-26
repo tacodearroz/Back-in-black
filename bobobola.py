@@ -1,6 +1,18 @@
 from pyray import *
 import math
 
+
+class churchil():
+    def __init__(self, position : Vector2, width : int, heigth  : int, color = BLACK):
+        self.position = position
+        self.width = width
+        self.heigth = heigth
+        self.color = color
+
+    def render(self):
+        draw_rectangle(int(self.position.x),int(self.position.y),self.width,self.heigth,self.color)
+
+
 class pelota():
     def __init__(self, position, radio, speed, color = BLACK):
         self.position = position
@@ -58,8 +70,10 @@ init_window(w,h,'holy window')
 set_target_fps(80)
 
 bola = pelota(Vector2(int(w/2), int(h/2)), 20, Vector2(3,3))
-    
+player1 = churchil(Vector2(10,h/2),5,10)
+
 while not window_should_close():
     clear_background(WHITE)
+    player1.render()
     bola.render()
     end_drawing()
