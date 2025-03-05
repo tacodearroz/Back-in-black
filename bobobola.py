@@ -3,7 +3,7 @@ import math
 
 
 class churchil():
-    def __init__(self, position : Vector2, width : int, heigth  : int, color = BLACK):
+    def __init__(self, position : Vector2, width : int, heigth  : int, color = WHITE):
         self.position = position
         self.width = width
         self.heigth = heigth
@@ -13,8 +13,20 @@ class churchil():
         draw_rectangle(int(self.position.x),int(self.position.y),self.width,self.heigth,self.color)
 
 
+class player(churchil):
+    def __init__(self, position : Vector2, width : int, heigth  : int, speed : Vector2,  color = WHITE):
+         super().__init__(position, width, heigth, color)
+         self.speed = speed
+    def move(self):
+        if is_key_down(KeyboardKey.KEY_W):
+            self.position.y = self.position.y - self.speed.y
+        if is_key_down(KeyboardKey.KEY_S):
+            self.position.y = self.position.y + self.speed.y
+
+
+
 class pelota():
-    def __init__(self, position, radio, speed, color = BLACK):
+    def __init__(self, position, radio, speed, color = WHITE):
         self.position = position
         self.radio = radio
         self.speed = speed
@@ -67,13 +79,14 @@ class Vector2:
 w = 1080
 h = 820
 init_window(w,h,'holy window')
-set_target_fps(80)
+set_target_fps(120)
 
 bola = pelota(Vector2(int(w/2), int(h/2)), 20, Vector2(3,3))
-player1 = churchil(Vector2(10,h/2),5,10)
+player1 = player(Vector2(10,h/2),10,70,Vector2(5,5))
 
 while not window_should_close():
-    clear_background(WHITE)
+    clear_background(BLACK)
     player1.render()
+    player1.move()
     bola.render()
     end_drawing()
