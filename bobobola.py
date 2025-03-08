@@ -23,6 +23,15 @@ class player(churchil):
         if is_key_down(KeyboardKey.KEY_S):
             self.position.y = self.position.y + self.speed.y
 
+class player2(churchil):
+    def __init__(self, position : Vector2, width : int, heigth  : int, speed : Vector2,  color = WHITE):
+         super().__init__(position, width, heigth, color)
+         self.speed = speed
+    def move(self):
+        if is_key_down(KeyboardKey.KEY_UP):
+            self.position.y = self.position.y - self.speed.y
+        if is_key_down(KeyboardKey.KEY_DOWN):
+            self.position.y = self.position.y + self.speed.y
 
 
 class pelota():
@@ -82,10 +91,13 @@ init_window(w,h,'holy window')
 set_target_fps(120)
 
 bola = pelota(Vector2(int(w/2), int(h/2)), 20, Vector2(3,3))
-player1 = player(Vector2(10,h/2),10,70,Vector2(5,5))
+player0 = player(Vector2(10,h/2),10,70,Vector2(5,5))
+player1 = player2(Vector2(1060,h/2),10,70,Vector2(5,5))
 
 while not window_should_close():
     clear_background(BLACK)
+    player0.render()
+    player0.move()
     player1.render()
     player1.move()
     bola.render()
