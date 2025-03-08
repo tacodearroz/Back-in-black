@@ -12,7 +12,6 @@ class churchil():
     def render(self):
         draw_rectangle(int(self.position.x),int(self.position.y),self.width,self.heigth,self.color)
 
-
 class player(churchil):
     def __init__(self, position : Vector2, width : int, heigth  : int, speed : Vector2,  color = WHITE):
          super().__init__(position, width, heigth, color)
@@ -43,10 +42,18 @@ class pelota():
     def render(self):
         draw_circle(self.position.x,self.position.y,self.radio,self.color)
         self.position = self.position+self.speed
+
         if(self.position.x >= get_screen_width()-self.radio or self.position.x < self.radio):
             self.speed.x = self.speed.x * -1
+
         if(self.position.y >= get_screen_height()-self.radio or self.position.y < self.radio):
             self.speed.y = self.speed.y * -1
+
+        if((self.position.x - self.radio <= player0.position.x + player0.width / 2) and (self.position.y <= player0.position.y + player0.heigth / 2 and self.position.y >= player0.position.y - player0.heigth / 2)):
+            self.speed.x = self.speed.x * -1
+
+        if((self.position.x + self.radio >= player1.position.x + player1.width / 2) and (self.position.y <= player1.position.y + player1.heigth / 2 and self.position.y >= player1.position.y - player1.heigth / 2)):
+            self.speed.x = self.speed.x * -1
 
 class Vector2:
     def __init__(self, x, y):
@@ -85,8 +92,8 @@ class Vector2:
     def __repr__(self):
         return f"Vector2({self.x}, {self.y})"
 
-w = 1080
-h = 820
+w,h = 1080,800
+
 init_window(w,h,'holy window')
 set_target_fps(120)
 
