@@ -26,8 +26,10 @@ class Player(Churchil):
             self.position.y = self.position.y + self.speed.y
 
 
+
+
 class Pelota():
-    def __init__(self, position, radio, speed, color = WHITE):
+    def __init__(self, position : Vector2, radio : int, speed : Vector2, color = WHITE):
         self.position = position
         self.radio = radio
         self.speed = speed
@@ -42,11 +44,16 @@ class Pelota():
         if(self.position.y >= get_screen_height()-self.radio or self.position.y < self.radio):
             self.speed.y = self.speed.y * -1
 
-        if((self.position.x - self.radio <= player0.position.x + player0.width / 2) and (self.position.y <= player0.position.y + player0.heigth / 2 and self.position.y >= player0.position.y - player0.heigth / 2)):
+    def collisionc(self,collider : Churchil):
+        if self.position.y + self.radio >= collider.position.y and self.position.y - self.radio <= collider.position.y+collider.heigth and self.position.x + self.radio >= collider.position.x and self.position.x - self.radio <= collider.position.x:    
+            return True
+        else: return False
+
+        """if((self.position.x - self.radio <= player0.position.x + player0.width / 2) and (self.position.y <= player0.position.y + player0.heigth / 2 and self.position.y >= player0.position.y - player0.heigth / 2)):
             self.speed.x = self.speed.x * -1
 
         if((self.position.x + self.radio >= player1.position.x + player1.width / 2) and (self.position.y <= player1.position.y + player1.heigth / 2 and self.position.y >= player1.position.y - player1.heigth / 2)):
-            self.speed.x = self.speed.x * -1
+            self.speed.x = self.speed.x * -1"""
 
 class Vector2:
     def __init__(self, x, y):
@@ -101,4 +108,8 @@ while not window_should_close():
     player1.render()
     player1.move()
     bola.render()
+    if bola.collisionc(player0):
+        bola.speed.x *= -1
+    if bola.collisionc(player1):
+        bola.speed.x *= -1
     end_drawing()
