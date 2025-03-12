@@ -2,7 +2,7 @@ from pyray import *
 import math
 
 
-class churchil():
+class Churchil():
     def __init__(self, position : Vector2, width : int, heigth  : int, color = WHITE):
         self.position = position
         self.width = width
@@ -12,28 +12,21 @@ class churchil():
     def render(self):
         draw_rectangle(int(self.position.x),int(self.position.y),self.width,self.heigth,self.color)
 
-class player(churchil):
-    def __init__(self, position : Vector2, width : int, heigth  : int, speed : Vector2,  color = WHITE):
-         super().__init__(position, width, heigth, color)
-         self.speed = speed
-    def move(self):
-        if is_key_down(KeyboardKey.KEY_W):
-            self.position.y = self.position.y - self.speed.y
-        if is_key_down(KeyboardKey.KEY_S):
-            self.position.y = self.position.y + self.speed.y
 
-class player2(churchil):
-    def __init__(self, position : Vector2, width : int, heigth  : int, speed : Vector2,  color = WHITE):
+class Player(Churchil):
+    def __init__(self, position : Vector2, width : int, heigth  : int, speed : Vector2, upBtn : KeyboardKey, downBtn: KeyboardKey,  color = WHITE):
          super().__init__(position, width, heigth, color)
          self.speed = speed
+         self.upBtn = upBtn
+         self.downBtn = downBtn
     def move(self):
-        if is_key_down(KeyboardKey.KEY_UP):
+        if is_key_down(self.upBtn):
             self.position.y = self.position.y - self.speed.y
-        if is_key_down(KeyboardKey.KEY_DOWN):
+        if is_key_down(self.downBtn):
             self.position.y = self.position.y + self.speed.y
 
 
-class pelota():
+class Pelota():
     def __init__(self, position, radio, speed, color = WHITE):
         self.position = position
         self.radio = radio
@@ -97,9 +90,9 @@ w,h = 1080,800
 init_window(w,h,'holy window')
 set_target_fps(120)
 
-bola = pelota(Vector2(int(w/2), int(h/2)), 20, Vector2(3,3))
-player0 = player(Vector2(10,h/2),10,70,Vector2(5,5))
-player1 = player2(Vector2(1060,h/2),10,70,Vector2(5,5))
+bola = Pelota(Vector2(int(w/2), int(h/2)), 20, Vector2(3,3))
+player0 = Player(Vector2(10,h/2),10,70,Vector2(5,5), KeyboardKey.KEY_UP, KeyboardKey.KEY_DOWN)
+player1 = Player(Vector2(1060,h/2),10,70,Vector2(5,5), KeyboardKey.KEY_W, KeyboardKey.KEY_S)
 
 while not window_should_close():
     clear_background(BLACK)
