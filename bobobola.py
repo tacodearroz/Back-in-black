@@ -19,13 +19,12 @@ class Player(Churchil):
          self.speed = speed
          self.upBtn = upBtn
          self.downBtn = downBtn
+         self.puntos = 0
     def move(self):
         if is_key_down(self.upBtn):
             self.position.y = self.position.y - self.speed.y
         if is_key_down(self.downBtn):
             self.position.y = self.position.y + self.speed.y
-
-
 
 
 class Pelota():
@@ -40,6 +39,10 @@ class Pelota():
 
         if(self.position.x >= get_screen_width()-self.radio or self.position.x < self.radio):
             self.speed.x = self.speed.x * -1
+            if self.position.x >= get_screen_width()-self.radio :
+                return "Right"
+            else:
+                return 'Left'
 
         if(self.position.y >= get_screen_height()-self.radio or self.position.y < self.radio):
             self.speed.y = self.speed.y * -1
@@ -54,6 +57,7 @@ class Pelota():
 
         if((self.position.x + self.radio >= player1.position.x + player1.width / 2) and (self.position.y <= player1.position.y + player1.heigth / 2 and self.position.y >= player1.position.y - player1.heigth / 2)):
             self.speed.x = self.speed.x * -1"""
+    
 
 class Vector2:
     def __init__(self, x, y):
@@ -91,6 +95,7 @@ class Vector2:
 
     def __repr__(self):
         return f"Vector2({self.x}, {self.y})"
+    
 
 w,h = 1080,800
 
@@ -112,4 +117,14 @@ while not window_should_close():
         bola.speed.x *= -1
     if bola.collisionc(player1):
         bola.speed.x *= -1
+    match bola.render():
+        case 'Right':
+            player0.puntos+=1
+        case 'Left':
+            player1.puntos+=1
+        case _:
+            pass
+    draw_text(str(player0.puntos),w-50, 10, 20, RED)
+    draw_text(str(player1.puntos),w-50, 10, 20, RED)
+
     end_drawing()
