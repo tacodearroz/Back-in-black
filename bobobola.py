@@ -1,5 +1,6 @@
 from pyray import *
 import math
+import gc
 
 
 class Churchil():
@@ -46,6 +47,10 @@ class Pelota():
 
         if(self.position.y >= get_screen_height()-self.radio or self.position.y < self.radio):
             self.speed.y = self.speed.y * -1
+
+        for player in [i for i in gc.get_objects() if isinstance(i, Player)]:
+            if((self.position.x - self.radio <= player.position.x + player.width and self.position.x + self.radio >= player.position.x) and (self.position.y + self.radio <= player.position.y + player.heigth and self.position.y - self.radio >= player.position.y)):
+                self.speed.x = self.speed.x * -1
 
     def collisionc(self,collider : Churchil):
         if self.position.y + self.radio >= collider.position.y and self.position.y - self.radio <= collider.position.y+collider.heigth and self.position.x + self.radio >= collider.position.x and self.position.x - self.radio <= collider.position.x:    
@@ -102,7 +107,7 @@ w,h = 1080,800
 init_window(w,h,'holy window')
 set_target_fps(120)
 
-bola = Pelota(Vector2(int(w/2), int(h/2)), 20, Vector2(3,3))
+bola = Pelota(Vector2(int(w/2), int(h/2)), 20, Vector2(1,1))
 player0 = Player(Vector2(10,h/2),10,70,Vector2(5,5), KeyboardKey.KEY_UP, KeyboardKey.KEY_DOWN)
 player1 = Player(Vector2(1060,h/2),10,70,Vector2(5,5), KeyboardKey.KEY_W, KeyboardKey.KEY_S)
 
@@ -113,10 +118,6 @@ while not window_should_close():
     player1.render()
     player1.move()
     bola.render()
-    if bola.collisionc(player0):
-        bola.speed.x *= -1
-    if bola.collisionc(player1):
-        bola.speed.x *= -1
     match bola.render():
         case 'Right':
             player0.puntos+=1
