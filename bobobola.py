@@ -1,5 +1,7 @@
 from pyray import *
 import math
+import gc
+import time
 
 
 class Churchil():
@@ -25,6 +27,10 @@ class Player(Churchil):
             self.position.y = self.position.y - self.speed.y
         if is_key_down(self.downBtn):
             self.position.y = self.position.y + self.speed.y
+        """if is_key_down(KeyboardKey.KEY_A): # This two are for debugging
+            self.position.x = self.position.x - self.speed.x
+        if is_key_down(KeyboardKey.KEY_D):
+            self.position.x = self.position.x + self.speed.x"""
 
 
 class Pelota():
@@ -47,22 +53,34 @@ class Pelota():
         if(self.position.y >= get_screen_height()-self.radio or self.position.y < self.radio):
             self.speed.y = self.speed.y * -1
 
+        for player in [i for i in gc.get_objects() if isinstance(i, Player)]:
+            if((self.position.x - self.radio <= player.position.x + player.width and self.position.x + self.radio >= player.position.x) and (self.position.y - self.radio <= player.position.y + player.heigth and self.position.y + self.radio >= player.position.y)):
+                #print(f"Collision at {time.time()}") # Debug
+                if self.position.x > player.position.x and self.position.x < player.position.x + player.width:
+                    self.speed.y = self.speed.y * -1
+                elif self.position.y > player.position.y and self.position.y < player.position.y + player.heigth:
+                    self.speed.x = self.speed.x * -1
+                else:
+                    self.speed.x *= -1
+                    if (player.position.y + (player.heigth / 2) < self.position.y):
+                        self.speed.y = abs(self.speed.y)
+                    elif (player.position.y + (player.heigth / 2) > self.position.y):
+                        self.speed.y = -abs(self.speed.y)
+
+
     def collisionc(self,collider : Churchil):
         if self.position.y + self.radio >= collider.position.y and self.position.y - self.radio <= collider.position.y+collider.heigth and self.position.x + self.radio >= collider.position.x and self.position.x - self.radio <= collider.position.x:    
             return True
         else: return False
-
-        """if((self.position.x - self.radio <= player0.position.x + player0.width / 2) and (self.position.y <= player0.position.y + player0.heigth / 2 and self.position.y >= player0.position.y - player0.heigth / 2)):
-            self.speed.x = self.speed.x * -1
-
-        if((self.position.x + self.radio >= player1.position.x + player1.width / 2) and (self.position.y <= player1.position.y + player1.heigth / 2 and self.position.y >= player1.position.y - player1.heigth / 2)):
-            self.speed.x = self.speed.x * -1"""
     
 
 class Vector2:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
 
     def __add__(self, other):
         if isinstance(other, Vector2):
@@ -74,15 +92,20 @@ class Vector2:
             return Vector2(self.x - other.x, self.y - other.y)
         return NotImplemented
 
-    def __mul__(self, scalar):
-        if isinstance(scalar, (int, float)):
-            return Vector2(self.x * scalar, self.y * scalar)
+    def __mul__(self, m):
+        if isinstance(m, (int, float)):
+            return Vector2(self.x * m, self.y * m)
+        elif isinstance(m, Vector2):
+            return Vector2(self.x * m.x, self.y * m.y)
         return NotImplemented
 
     def __truediv__(self, scalar):
         if isinstance(scalar, (int, float)) and scalar != 0:
             return Vector2(self.x / scalar, self.y / scalar)
         return NotImplemented
+    
+    def __abs__(self):
+        return Vector2(abs(self.x), abs(self.y))
 
     def magnitude(self):
         return math.sqrt(self.x**2 + self.y**2)
@@ -92,6 +115,12 @@ class Vector2:
         if mag != 0:
             return Vector2(self.x / mag, self.y / mag)
         return Vector2(0, 0) 
+    
+    def __neg__(self):
+        return Vector2(-self.x, -self.y)
+
+    def round(self):
+        return Vector2(round(self.x), round(self.y))
 
     def __repr__(self):
         return f"Vector2({self.x}, {self.y})"
@@ -100,9 +129,9 @@ class Vector2:
 w,h = 1080,800
 
 init_window(w,h,'holy window')
-set_target_fps(120)
+set_target_fps(60)
 
-bola = Pelota(Vector2(int(w/2), int(h/2)), 20, Vector2(3,3))
+bola = Pelota(Vector2(int(w/2), int(h/2)), 20, Vector2(2,2))
 player0 = Player(Vector2(10,h/2),10,70,Vector2(5,5), KeyboardKey.KEY_UP, KeyboardKey.KEY_DOWN)
 player1 = Player(Vector2(1060,h/2),10,70,Vector2(5,5), KeyboardKey.KEY_W, KeyboardKey.KEY_S)
 
@@ -113,10 +142,6 @@ while not window_should_close():
     player1.render()
     player1.move()
     bola.render()
-    if bola.collisionc(player0):
-        bola.speed.x *= -1
-    if bola.collisionc(player1):
-        bola.speed.x *= -1
     match bola.render():
         case 'Right':
             player0.puntos+=1
@@ -124,7 +149,7 @@ while not window_should_close():
             player1.puntos+=1
         case _:
             pass
-    draw_text(str(player0.puntos),w-50, 10, 20, RED)
+    draw_text(str(player0.puntos),w-1050, 10, 20, RED)
     draw_text(str(player1.puntos),w-50, 10, 20, RED)
 
     end_drawing()
